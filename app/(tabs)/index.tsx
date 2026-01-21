@@ -75,7 +75,7 @@ export default function HomeScreen() {
 
             <TouchableOpacity
               style={styles.actionItem}
-              onPress={() => router.push('/(tabs)/jobs')}
+              onPress={() => router.push('/jobs')}
             >
               <View style={[styles.actionIcon, { backgroundColor: '#FFF7ED' }]}>
                 <FontAwesome name="search" size={20} color={Colors.warning} />
@@ -93,7 +93,7 @@ export default function HomeScreen() {
                   key={cat.id}
                   style={styles.categoryChip}
                   onPress={() => router.push({
-                    pathname: '/(tabs)/jobs',
+                    pathname: '/jobs',
                     params: { category: cat.name }
                   })}
                 >
@@ -108,7 +108,7 @@ export default function HomeScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Recently Posted</Text>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/jobs')}>
+              <TouchableOpacity onPress={() => router.push('/jobs')}>
                 <Text style={styles.seeAll}>View all</Text>
               </TouchableOpacity>
             </View>
@@ -134,7 +134,7 @@ export default function HomeScreen() {
               </View>
               <Button
                 title="View Details"
-                onPress={() => router.push('/(tabs)/jobs')}
+                onPress={() => router.push('/jobs')}
                 variant="primary"
                 size="small"
                 style={{ marginTop: 16 }}

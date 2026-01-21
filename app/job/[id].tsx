@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, View, Text, Linking, Alert, StatusBar } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, Linking, Alert, StatusBar, TouchableOpacity, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { Colors, Shadows } from '../../constants/Colors';
@@ -27,24 +27,27 @@ export default function JobDetailsScreen() {
     return (
         <View style={styles.outerContainer}>
             <StatusBar barStyle="dark-content" />
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-                        <FontAwesome name="arrow-left" size={18} color={Colors.text} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Job Details</Text>
-                    <TouchableOpacity style={styles.backBtn}>
-                        <FontAwesome name="share-alt" size={18} color={Colors.text} />
-                    </TouchableOpacity>
-                </View>
 
+            {/* Custom Header */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+                    <FontAwesome name="arrow-left" size={18} color={Colors.text} />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Job Details</Text>
+                <TouchableOpacity style={styles.backBtn}>
+                    <FontAwesome name="share-alt" size={18} color={Colors.text} />
+                </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.content}>
+                    {/* Hero Section */}
                     <Card style={styles.mainCard}>
                         <View style={styles.logoContainer}>
-                            <FontAwesome name="building" size={30} color={Colors.accent} />
+                            <FontAwesome name="briefcase" size={30} color={Colors.accent} />
                         </View>
-                        <Text style={styles.jobTitle}>{title || 'Job Title'}</Text>
-                        <Text style={styles.companyName}>{company || 'Company Name'}</Text>
+                        <Text style={styles.jobTitle}>{title || 'Administrative Manager'}</Text>
+                        <Text style={styles.companyName}>{company || 'Olusola & Associates'}</Text>
 
                         <View style={styles.infoRow}>
                             <View style={styles.infoItem}>
@@ -55,40 +58,106 @@ export default function JobDetailsScreen() {
                                 <FontAwesome name="clock-o" size={14} color={Colors.textSecondary} />
                                 <Text style={styles.infoText}>Full-time</Text>
                             </View>
+                            <View style={styles.infoItem}>
+                                <FontAwesome name="money" size={14} color={Colors.success} />
+                                <Text style={[styles.infoText, { color: Colors.success }]}>₦120k+</Text>
+                            </View>
                         </View>
                     </Card>
 
+                    {/* Job Details Section */}
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Description</Text>
+                        <Text style={styles.sectionTitle}>Job Description</Text>
                         <Text style={styles.descriptionText}>
-                            {description || 'Detailed job description will appear here. This includes the daily tasks and expectations for the role.'}
+                            {description || 'We are looking for a highly motivated and detail-oriented Administrative Manager to oversee our office operations. The ideal candidate will be responsible for managing staff, coordinating schedules, and ensuring the smooth day-to-day functioning of our Abeokuta office.'}
                         </Text>
                     </View>
 
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Requirements</Text>
-                        <View style={styles.bulletItem}>
-                            <View style={styles.bullet} />
-                            <Text style={styles.bulletText}>Minimum of 2 years experience in a similar role.</Text>
-                        </View>
-                        <View style={styles.bulletItem}>
-                            <View style={styles.bullet} />
-                            <Text style={styles.bulletText}>Excellent communication and interpersonal skills.</Text>
-                        </View>
-                        <View style={styles.bulletItem}>
-                            <View style={styles.bullet} />
-                            <Text style={styles.bulletText}>Resident of Abeokuta or willing to relocate.</Text>
-                        </View>
+                        <Text style={styles.sectionTitle}>Key Responsibilities</Text>
+                        {[
+                            'Oversee daily office operations and staff performance.',
+                            'Manage office budgets and supplies.',
+                            'Coordinate internal and external communications.',
+                            'Ensure compliance with company policies and procedures.',
+                            'Handle administrative tasks for the executive team.'
+                        ].map((item, index) => (
+                            <View key={index} style={styles.bulletItem}>
+                                <View style={styles.bullet} />
+                                <Text style={styles.bulletText}>{item}</Text>
+                            </View>
+                        ))}
                     </View>
+
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Qualifications</Text>
+                        {[
+                            'Bachelor\'s degree in Business Administration or related field.',
+                            '3+ years of experience in an administrative management role.',
+                            'Excellent organizational and leadership skills.',
+                            'Proficiency in Microsoft Office Suite.',
+                            'Strong communication and interpersonal abilities.'
+                        ].map((item, index) => (
+                            <View key={index} style={styles.bulletItem}>
+                                <View style={styles.bullet} />
+                                <Text style={styles.bulletText}>{item}</Text>
+                            </View>
+                        ))}
+                    </View>
+
+                    {/* Company Info Card */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>About the Company</Text>
+                        <Card style={styles.companyCard}>
+                            <View style={styles.companyHeader}>
+                                <View style={styles.companyLogoSmall}>
+                                    <FontAwesome name="building" size={20} color={Colors.border} />
+                                </View>
+                                <View>
+                                    <Text style={styles.companyTitleSmall}>{company || 'Olusola & Associates'}</Text>
+                                    <Text style={styles.companyIndustry}>Professional Services • 50-200 Employees</Text>
+                                </View>
+                            </View>
+                            <Text style={styles.companyDescription}>
+                                Olusola & Associates is a leading professional services firm based in Abeokuta, providing top-notch solutions to clients across various sectors.
+                            </Text>
+                            <TouchableOpacity style={styles.viewProfileBtn}>
+                                <Text style={styles.viewProfileText}>View Company Profile</Text>
+                            </TouchableOpacity>
+                        </Card>
+                    </View>
+                </View>
+
+                {/* Related Jobs Section */}
+                <View style={styles.relatedSection}>
+                    <Text style={[styles.sectionTitle, { marginLeft: 20 }]}>Related Positions</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.relatedScroll}>
+                        {[1, 2, 3].map((i) => (
+                            <Card key={i} style={styles.relatedCard}>
+                                <Text style={styles.relatedTitle}>Operations Assistant</Text>
+                                <Text style={styles.relatedCompany}>Green View Hub</Text>
+                                <View style={styles.relatedFooter}>
+                                    <Text style={styles.relatedSalary}>₦80k+</Text>
+                                    <FontAwesome name="chevron-right" size={10} color={Colors.textMuted} />
+                                </View>
+                            </Card>
+                        ))}
+                        <View style={{ width: 40 }} />
+                    </ScrollView>
                 </View>
             </ScrollView>
 
+            {/* Sticky Footer */}
             <View style={styles.footer}>
+                <TouchableOpacity style={styles.saveBtn}>
+                    <FontAwesome name="bookmark-o" size={20} color={Colors.accent} />
+                </TouchableOpacity>
                 <Button
                     title="Apply via WhatsApp"
                     onPress={handleApply}
                     icon={<FontAwesome name="whatsapp" size={20} color={Colors.white} />}
                     style={styles.applyBtn}
+                    variant="primary"
                 />
             </View>
         </View>
@@ -111,6 +180,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 20,
         backgroundColor: Colors.surface,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.border,
     },
     headerTitle: {
         fontSize: 18,
@@ -131,13 +202,13 @@ const styles = StyleSheet.create({
     mainCard: {
         alignItems: 'center',
         padding: 30,
-        marginBottom: 30,
+        marginBottom: 24,
     },
     logoContainer: {
         width: 70,
         height: 70,
         borderRadius: 24,
-        backgroundColor: Colors.surfaceSecondary,
+        backgroundColor: '#EEF2FF',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
@@ -159,30 +230,33 @@ const styles = StyleSheet.create({
     infoRow: {
         flexDirection: 'row',
         marginTop: 20,
+        justifyContent: 'center',
+        width: '100%',
     },
     infoItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 12,
+        marginHorizontal: 10,
     },
     infoText: {
-        fontSize: 14,
+        fontSize: 13,
         color: Colors.textSecondary,
         marginLeft: 6,
         fontWeight: '600',
     },
     section: {
-        marginBottom: 30,
+        marginBottom: 32,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '800',
         color: Colors.text,
         marginBottom: 16,
+        letterSpacing: 0.2,
     },
     descriptionText: {
-        fontSize: 16,
-        lineHeight: 26,
+        fontSize: 15,
+        lineHeight: 24,
         color: Colors.textSecondary,
     },
     bulletItem: {
@@ -200,19 +274,110 @@ const styles = StyleSheet.create({
     },
     bulletText: {
         fontSize: 15,
-        lineHeight: 24,
+        lineHeight: 22,
         color: Colors.textSecondary,
         flex: 1,
     },
+    companyCard: {
+        padding: 16,
+        backgroundColor: Colors.surface,
+    },
+    companyHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    companyLogoSmall: {
+        width: 44,
+        height: 44,
+        borderRadius: 10,
+        backgroundColor: Colors.surfaceSecondary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    companyTitleSmall: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: Colors.text,
+    },
+    companyIndustry: {
+        fontSize: 12,
+        color: Colors.textMuted,
+        marginTop: 2,
+    },
+    companyDescription: {
+        fontSize: 14,
+        color: Colors.textSecondary,
+        lineHeight: 20,
+    },
+    viewProfileBtn: {
+        marginTop: 16,
+        paddingVertical: 10,
+        alignItems: 'center',
+        borderRadius: 10,
+        backgroundColor: Colors.surfaceSecondary,
+    },
+    viewProfileText: {
+        color: Colors.accent,
+        fontWeight: '700',
+        fontSize: 14,
+    },
+    relatedSection: {
+        marginBottom: 40,
+    },
+    relatedScroll: {
+        marginTop: 16,
+        paddingLeft: 20,
+    },
+    relatedCard: {
+        width: 180,
+        padding: 16,
+        marginRight: 16,
+    },
+    relatedTitle: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: Colors.text,
+        marginBottom: 4,
+    },
+    relatedCompany: {
+        fontSize: 12,
+        color: Colors.accent,
+        fontWeight: '600',
+        marginBottom: 12,
+    },
+    relatedFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    relatedSalary: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: Colors.success,
+    },
     footer: {
+        flexDirection: 'row',
+        alignItems: 'center',
         padding: 20,
-        paddingBottom: 40,
+        paddingBottom: 35,
         backgroundColor: Colors.surface,
         borderTopWidth: 1,
         borderTopColor: Colors.border,
         ...Shadows.medium,
     },
+    saveBtn: {
+        width: 56,
+        height: 56,
+        borderRadius: 16,
+        backgroundColor: Colors.surfaceSecondary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
     applyBtn: {
-        width: '100%',
+        flex: 1,
+        height: 56,
     },
 });

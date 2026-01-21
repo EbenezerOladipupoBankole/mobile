@@ -10,6 +10,7 @@ interface ButtonProps {
     loading?: boolean;
     disabled?: boolean;
     icon?: React.ReactNode;
+    style?: any;
 }
 
 export const Button = ({
@@ -19,7 +20,8 @@ export const Button = ({
     size = 'medium',
     loading,
     disabled,
-    icon
+    icon,
+    style
 }: ButtonProps) => {
     const containerStyle = [
         styles.button,
@@ -27,6 +29,7 @@ export const Button = ({
         styles[variant],
         (disabled || loading) && styles.disabled,
         variant === 'primary' && !disabled && !loading && Shadows.small,
+        style,
     ];
 
     const textStyle = [

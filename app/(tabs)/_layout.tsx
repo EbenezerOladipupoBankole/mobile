@@ -53,6 +53,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="saved"
+        options={{
+          title: 'Saved',
+          tabBarIcon: ({ color }) => <TabBarIcon name="bookmark" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Me',
