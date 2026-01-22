@@ -68,7 +68,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.heroText}>Find professional opportunities in Abeokuta.</Text>
+          <Text style={styles.heroText}>Find professional opportunities in Abeokuta. (Updated)</Text>
 
           <View style={styles.searchContainer}>
             <Input
