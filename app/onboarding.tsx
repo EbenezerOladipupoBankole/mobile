@@ -1,33 +1,35 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, View, Text, FlatList, Animated, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors } from '../constants/Colors';
+import { Colors, Shadows } from '../constants/Colors';
 import { Button } from '../components/Button';
 import { FontAwesome } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Logo } from '../components/Logo';
 
 const { width, height } = Dimensions.get('window');
 
 const SLIDES = [
     {
         id: '1',
-        title: 'Find Your Next Job',
-        description: 'Explore the latest career opportunities specifically within Abeokuta and its surroundings.',
+        title: 'Find Real Jobs in Abeokuta',
+        description: 'Connect with top employers in Ogun State and secure your next big career move.',
         icon: 'search',
-        color: '#3B82F6',
+        colors: ['#3B82F6', '#2563EB'],
     },
     {
         id: '2',
-        title: 'Hire Best Talent',
-        description: 'Post jobs and connect with thousands of skilled professionals ready to work.',
+        title: 'Hire Top Local Talent',
+        description: 'Streamline your recruitment process with a pool of verified professionals right in your city.',
         icon: 'briefcase',
-        color: '#10B981',
+        colors: ['#10B981', '#059669'],
     },
     {
         id: '3',
-        title: 'Join Talent Pool',
-        description: 'Submit your profile and CV to get noticed by top employers in the city.',
-        icon: 'id-card-o',
-        color: '#F59E0B',
+        title: 'Grow Your Career',
+        description: 'Access resources, networking opportunities, and a community dedicated to professional excellence.',
+        icon: 'line-chart',
+        colors: ['#F59E0B', '#D97706'],
     },
 ];
 
@@ -35,19 +37,33 @@ export default function OnboardingScreen() {
     const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0);
     const scrollX = useRef(new Animated.Value(0)).current;
-    const slidesRef = useRef(null);
+    const slidesRef = useRef<FlatList>(null);
 
-    const viewableItemsChanged = useRef(({ viewableItems }) => {
-        setCurrentIndex(viewableItems[0].index);
+    const viewableItemsChanged = useRef(({ viewableItems }: any) => {
+        if (viewableItems && viewableItems.length > 0) {
+            setCurrentIndex(viewableItems[0].index);
+        }
     }).current;
 
     const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }: { item: any }) => (
         <View style={styles.slide}>
-            <View style={[styles.iconContainer, { backgroundColor: `${item.color}15` }]}>
-                <FontAwesome name={item.icon as any} size={80} color={item.color} />
-            </View>
+            <LinearGradient
+                colors={item.colors}
+                style={styles.gradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+            >
+                <View style={styles.iconCircle}>
+                    {item.id === '1' ? (
+                        <Logo size={80} color="transparent" iconOnly />
+                    ) : (
+                        <FontAwesome name={item.icon as any} size={70} color={Colors.white} />
+                    )}
+                </View>
+            </LinearGradient>
+
             <View style={styles.textContainer}>
                 <Text style={styles.title}>{item.title}</Text>
                 <Text style={styles.description}>{item.description}</Text>
@@ -103,7 +119,7 @@ export default function OnboardingScreen() {
                         />
                     ) : (
                         <TouchableOpacity
-                            onPress={() => slidesRef.current.scrollToIndex({ index: currentIndex + 1 })}
+                            onPress={() => slidesRef.current?.scrollToIndex({ index: currentIndex + 1 })}
                             style={styles.nextBtn}
                         >
                             <Text style={styles.nextText}>Next</Text>
@@ -126,42 +142,54 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.background,
     },
     slide: {
         width,
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: 40,
+        paddingTop: 60,
     },
-    iconContainer: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
+    gradient: {
+        width: width * 0.8,
+        height: width * 0.8,
+        borderRadius: 40,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 40,
+        ...Shadows.large,
+    },
+    iconCircle: {
+        width: 140,
+        height: 140,
+        borderRadius: 70,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
     },
     textContainer: {
         alignItems: 'center',
+        paddingHorizontal: 30,
     },
     title: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: '900',
         color: Colors.text,
         textAlign: 'center',
         marginBottom: 16,
+        letterSpacing: -1,
     },
     description: {
-        fontSize: 16,
+        fontSize: 17,
         color: Colors.textSecondary,
         textAlign: 'center',
-        lineHeight: 24,
+        lineHeight: 26,
         paddingHorizontal: 20,
     },
     footer: {
         flex: 1,
-        paddingHorizontal: 40,
+        paddingHorizontal: 30,
         justifyContent: 'space-between',
         paddingBottom: 50,
     },
@@ -171,8 +199,8 @@ const styles = StyleSheet.create({
         height: 32,
     },
     dot: {
-        height: 8,
-        borderRadius: 4,
+        height: 6,
+        borderRadius: 3,
         backgroundColor: Colors.accent,
         marginHorizontal: 4,
     },
@@ -183,16 +211,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 18,
+        backgroundColor: Colors.surface,
+        paddingVertical: 16,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        ...Shadows.small,
     },
     nextText: {
-        fontSize: 18,
-        fontWeight: '800',
-        color: Colors.accent,
+        fontSize: 17,
+        fontWeight: '700',
+        color: Colors.text,
         marginRight: 10,
     },
     skipBtn: {
         alignItems: 'center',
+        paddingVertical: 10,
     },
     skipText: {
         color: Colors.textMuted,

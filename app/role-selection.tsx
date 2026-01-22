@@ -1,10 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, StatusBar, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, Shadows } from '../constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
+import { Logo } from '../components/Logo';
 
 export default function RoleSelectionScreen() {
     const router = useRouter();
@@ -16,44 +15,58 @@ export default function RoleSelectionScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-            <View style={styles.content}>
-                <Text style={styles.greeting}>Welcome to ViteHire</Text>
-                <Text style={styles.question}>Select your path to get started</Text>
+            <StatusBar barStyle="light-content" />
 
+            {/* Premium Decorative Header */}
+            <View style={styles.header}>
+                <Logo size={48} iconOnly style={styles.logo} />
+                <Text style={styles.greeting}>Start your journey</Text>
+                <Text style={styles.question}>Choose the path that fits your goals</Text>
+            </View>
+
+            <View style={styles.content}>
                 <View style={styles.optionsContainer}>
                     <TouchableOpacity
-                        style={[styles.optionCard, { borderLeftColor: '#3B82F6' }]}
+                        style={styles.optionCard}
                         onPress={() => selectRole('seeker')}
+                        activeOpacity={0.7}
                     >
-                        <View style={[styles.iconWrapper, { backgroundColor: '#3B82F615' }]}>
-                            <FontAwesome name="user-md" size={32} color="#3B82F6" />
+                        <View style={[styles.iconContainer, { backgroundColor: '#3B82F610' }]}>
+                            <FontAwesome name="user-circle" size={32} color={Colors.accent} />
                         </View>
                         <View style={styles.textWrapper}>
-                            <Text style={styles.optionTitle}>Hire Me</Text>
-                            <Text style={styles.optionDesc}>I am looking for job opportunities in Abeokuta.</Text>
+                            <Text style={styles.optionTitle}>I want to be hired</Text>
+                            <Text style={styles.optionDesc}>Explore local opportunities and grow your career in Abeokuta.</Text>
                         </View>
-                        <FontAwesome name="chevron-right" size={14} color={Colors.border} />
+                        <View style={styles.arrowWrapper}>
+                            <FontAwesome name="arrow-right" size={12} color={Colors.accent} />
+                        </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.optionCard, { borderLeftColor: '#10B981' }]}
+                        style={styles.optionCard}
                         onPress={() => selectRole('employer')}
+                        activeOpacity={0.7}
                     >
-                        <View style={[styles.iconWrapper, { backgroundColor: '#10B98115' }]}>
-                            <FontAwesome name="building" size={28} color="#10B981" />
+                        <View style={[styles.iconContainer, { backgroundColor: '#10B98110' }]}>
+                            <FontAwesome name="briefcase" size={28} color={Colors.success} />
                         </View>
                         <View style={styles.textWrapper}>
-                            <Text style={styles.optionTitle}>Post Jobs & Talent</Text>
-                            <Text style={styles.optionDesc}>I want to find skilled professionals for my team.</Text>
+                            <Text style={styles.optionTitle}>I want to hire talent</Text>
+                            <Text style={styles.optionDesc}>Post jobs and find the best professional talent for your team.</Text>
                         </View>
-                        <FontAwesome name="chevron-right" size={14} color={Colors.border} />
+                        <View style={[styles.arrowWrapper, { backgroundColor: '#10B98115' }]}>
+                            <FontAwesome name="arrow-right" size={12} color={Colors.success} />
+                        </View>
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.infoBox}>
-                    <FontAwesome name="info-circle" size={16} color={Colors.textMuted} />
-                    <Text style={styles.infoText}>You can switch your role anytime in the profile settings.</Text>
+                <View style={styles.footer}>
+                    <View style={styles.infoBox}>
+                        <FontAwesome name="shield" size={14} color={Colors.textMuted} />
+                        <Text style={styles.infoText}>Secure • Professional • Reliable</Text>
+                    </View>
+                    <Text style={styles.switchNote}>You can switch roles later in settings</Text>
                 </View>
             </View>
         </View>
@@ -64,39 +77,52 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
-        justifyContent: 'center',
     },
-    content: {
-        padding: 24,
+    header: {
+        backgroundColor: Colors.primary,
+        paddingTop: 80,
+        paddingHorizontal: 30,
+        paddingBottom: 60,
+        borderBottomLeftRadius: 40,
+        borderBottomRightRadius: 40,
+    },
+    logo: {
+        marginBottom: 32,
     },
     greeting: {
-        fontSize: 32,
+        fontSize: 34,
         fontWeight: '900',
-        color: Colors.text,
-        letterSpacing: -0.5,
+        color: Colors.white,
+        letterSpacing: -1,
     },
     question: {
         fontSize: 16,
-        color: Colors.textSecondary,
+        color: 'rgba(255,255,255,0.6)',
         marginTop: 8,
-        marginBottom: 48,
+        fontWeight: '500',
+    },
+    content: {
+        flex: 1,
+        paddingHorizontal: 24,
+        marginTop: -30,
     },
     optionsContainer: {
-        gap: 20,
+        gap: 16,
     },
     optionCard: {
         backgroundColor: Colors.white,
-        borderRadius: 20,
+        borderRadius: 24,
         padding: 24,
         flexDirection: 'row',
         alignItems: 'center',
-        borderLeftWidth: 6,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.03)',
         ...Shadows.medium,
     },
-    iconWrapper: {
+    iconContainer: {
         width: 64,
         height: 64,
-        borderRadius: 18,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 20,
@@ -105,28 +131,51 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     optionTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '800',
         color: Colors.text,
         marginBottom: 4,
     },
     optionDesc: {
-        fontSize: 14,
+        fontSize: 13,
         color: Colors.textSecondary,
-        lineHeight: 20,
+        lineHeight: 18,
+        fontWeight: '500',
+    },
+    arrowWrapper: {
+        width: 32,
+        height: 32,
+        borderRadius: 12,
+        backgroundColor: '#3B82F615',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 12,
+    },
+    footer: {
+        marginTop: 'auto',
+        marginBottom: 40,
+        alignItems: 'center',
     },
     infoBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 48,
-        paddingHorizontal: 30,
+        backgroundColor: Colors.surfaceSecondary,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 100,
+        marginBottom: 16,
     },
     infoText: {
         fontSize: 12,
+        color: Colors.textSecondary,
+        fontWeight: '700',
+        marginLeft: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+    },
+    switchNote: {
+        fontSize: 13,
         color: Colors.textMuted,
-        marginLeft: 10,
-        textAlign: 'center',
-        lineHeight: 18,
+        fontWeight: '500',
     },
 });

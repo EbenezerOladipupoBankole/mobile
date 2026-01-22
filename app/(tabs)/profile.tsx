@@ -5,11 +5,33 @@ import { Colors, Shadows } from '../../constants/Colors';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { useRouter } from 'expo-router';
+import { auth } from '../../utils/firebase';
+import { signOut } from 'firebase/auth';
+import { Alert } from 'react-native';
 
 export default function ProfileScreen() {
     const router = useRouter();
-
+    const user = auth.currentUser;
     const skills = ['Project Management', 'Team Leadership', 'Office Administration', 'Customer Relations'];
+
+    const handleSignOut = async () => {
+        try {
+            await signOut(auth);
+            router.replace('/auth');
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Failed to sign out. Please try again.');
+        }
+    };
+
+    const getInitials = (name: string | null) => {
+        if (!name) return 'VH';
+        const parts = name.split(' ');
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        return name.slice(0, 2).toUpperCase();
+    };
 
     return (
         <ScrollView
@@ -19,14 +41,14 @@ export default function ProfileScreen() {
             <View style={styles.header}>
                 <View style={styles.avatarContainer}>
                     <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>VH</Text>
+                        <Text style={styles.avatarText}>{getInitials(user?.displayName || 'ViteHire User')}</Text>
                     </View>
                     <TouchableOpacity style={styles.editAvatar}>
                         <FontAwesome name="camera" size={14} color={Colors.white} />
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.name}>ViteHire User</Text>
-                <Text style={styles.location}>Abeokuta, Nigeria</Text>
+                <Text style={styles.name}>{user?.displayName || 'ViteHire User'}</Text>
+                <Text style={styles.email}>{user?.email || 'Abeokuta, Nigeria'}</Text>
 
                 <View style={styles.badgeRow}>
                     <View style={styles.verifiedBadge}>
@@ -136,7 +158,7 @@ export default function ProfileScreen() {
 
                 <Button
                     title="Sign Out"
-                    onPress={() => { }}
+                    onPress={handleSignOut}
                     variant="outline"
                     style={{ marginTop: 24, marginBottom: 20 }}
                 />
@@ -198,6 +220,12 @@ const styles = StyleSheet.create({
         color: Colors.text,
     },
     location: {
+        fontSize: 14,
+        color: Colors.textSecondary,
+        fontWeight: '500',
+        marginTop: 4,
+    },
+    email: {
         fontSize: 14,
         color: Colors.textSecondary,
         fontWeight: '500',

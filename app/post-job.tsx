@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, Alert } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, Alert, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Colors, Shadows } from '../constants/Colors';
 import { Button } from '../components/Button';
@@ -56,69 +56,98 @@ export default function PostJobScreen() {
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <FontAwesome name="arrow-left" size={18} color={Colors.white} />
+                </TouchableOpacity>
                 <Text style={styles.title}>Post a Job</Text>
-                <Text style={styles.subtitle}>Find your next star employee.</Text>
+                <Text style={styles.subtitle}>Find your next star employee in Abeokuta.</Text>
             </View>
 
             <View style={styles.formContainer}>
                 <Card style={styles.formCard}>
-                    <Input
-                        label="Company Name *"
-                        placeholder="Olusola & Associates"
-                        value={form.companyName}
-                        onChangeText={(text) => setForm({ ...form, companyName: text })}
-                        leftIcon={<FontAwesome name="building-o" size={16} color={Colors.textSecondary} />}
-                    />
-                    <Input
-                        label="Position Title *"
-                        placeholder="e.g. Project Manager"
-                        value={form.title}
-                        onChangeText={(text) => setForm({ ...form, title: text })}
-                        leftIcon={<FontAwesome name="id-card-o" size={16} color={Colors.textSecondary} />}
-                    />
-                    <Input
-                        label="Job Category *"
-                        placeholder="e.g. Administration"
-                        value={form.category}
-                        onChangeText={(text) => setForm({ ...form, category: text })}
-                    />
-                    <Input
-                        label="Job Type *"
-                        placeholder="Full-time, Part-time, Remote"
-                        value={form.jobType}
-                        onChangeText={(text) => setForm({ ...form, jobType: text })}
-                    />
-                    <Input
-                        label="Job Description *"
-                        placeholder="Describe the role and responsibilities..."
-                        multiline
-                        numberOfLines={5}
-                        value={form.description}
-                        onChangeText={(text) => setForm({ ...form, description: text })}
-                    />
-                    <Input
-                        label="Requirements *"
-                        placeholder="Qualifications, experience, etc."
-                        multiline
-                        numberOfLines={4}
-                        value={form.requirements}
-                        onChangeText={(text) => setForm({ ...form, requirements: text })}
-                    />
-                    <Input
-                        label="WhatsApp Number *"
-                        placeholder="234 801 234 5678"
-                        keyboardType="phone-pad"
-                        value={form.whatsappContact}
-                        onChangeText={(text) => setForm({ ...form, whatsappContact: text })}
-                        leftIcon={<FontAwesome name="whatsapp" size={18} color={Colors.success} />}
-                    />
-                    <Text style={styles.hint}>Format: International code (234) + number</Text>
+                    {/* Section: Company Info */}
+                    <View style={styles.section}>
+                        <View style={styles.sectionHeader}>
+                            <FontAwesome name="building" size={16} color={Colors.primary} />
+                            <Text style={styles.sectionTitle}>Company Information</Text>
+                        </View>
+                        <Input
+                            label="Company Name *"
+                            placeholder="Olusola & Associates"
+                            value={form.companyName}
+                            onChangeText={(text) => setForm({ ...form, companyName: text })}
+                            leftIcon={<FontAwesome name="id-badge" size={16} color={Colors.textSecondary} />}
+                        />
+                    </View>
+
+                    {/* Section: Job Details */}
+                    <View style={styles.section}>
+                        <View style={styles.sectionHeader}>
+                            <FontAwesome name="briefcase" size={16} color={Colors.primary} />
+                            <Text style={styles.sectionTitle}>Job Details</Text>
+                        </View>
+                        <Input
+                            label="Position Title *"
+                            placeholder="e.g. Project Manager"
+                            value={form.title}
+                            onChangeText={(text) => setForm({ ...form, title: text })}
+                            leftIcon={<FontAwesome name="pencil" size={16} color={Colors.textSecondary} />}
+                        />
+                        <Input
+                            label="Job Category *"
+                            placeholder="e.g. Administration"
+                            value={form.category}
+                            onChangeText={(text) => setForm({ ...form, category: text })}
+                            leftIcon={<FontAwesome name="folder-open" size={16} color={Colors.textSecondary} />}
+                        />
+                        <Input
+                            label="Job Type *"
+                            placeholder="Full-time, Part-time, Remote"
+                            value={form.jobType}
+                            onChangeText={(text) => setForm({ ...form, jobType: text })}
+                            leftIcon={<FontAwesome name="clock-o" size={16} color={Colors.textSecondary} />}
+                        />
+                        <Input
+                            label="Job Description *"
+                            placeholder="What will they be doing?"
+                            multiline
+                            numberOfLines={5}
+                            value={form.description}
+                            onChangeText={(text) => setForm({ ...form, description: text })}
+                        />
+                        <Input
+                            label="Requirements *"
+                            placeholder="Skills and qualifications..."
+                            multiline
+                            numberOfLines={4}
+                            value={form.requirements}
+                            onChangeText={(text) => setForm({ ...form, requirements: text })}
+                        />
+                    </View>
+
+                    {/* Section: Contact */}
+                    <View style={styles.section}>
+                        <View style={styles.sectionHeader}>
+                            <FontAwesome name="phone" size={16} color={Colors.primary} />
+                            <Text style={styles.sectionTitle}>Contact & Submission</Text>
+                        </View>
+                        <Input
+                            label="WhatsApp Number *"
+                            placeholder="234 801 234 5678"
+                            keyboardType="phone-pad"
+                            value={form.whatsappContact}
+                            onChangeText={(text) => setForm({ ...form, whatsappContact: text })}
+                            leftIcon={<FontAwesome name="whatsapp" size={18} color={Colors.success} />}
+                        />
+                        <Text style={styles.hint}>Format: International code (234) + number</Text>
+                    </View>
 
                     <Button
                         title="Publish Job"
                         onPress={handleSubmit}
                         loading={loading}
-                        style={{ marginTop: 10 }}
+                        size="large"
+                        style={styles.publishBtn}
                     />
                 </Card>
             </View>
@@ -132,33 +161,73 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.background,
     },
     header: {
-        padding: 30,
+        paddingTop: 60,
+        paddingHorizontal: 30,
+        paddingBottom: 60,
         backgroundColor: Colors.primary,
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
     },
     title: {
-        fontSize: 26,
+        fontSize: 28,
         fontWeight: '900',
         color: Colors.white,
-        letterSpacing: -0.5,
+        letterSpacing: -1,
     },
     subtitle: {
-        fontSize: 16,
-        color: Colors.textMuted,
+        fontSize: 15,
+        color: 'rgba(255,255,255,0.6)',
         marginTop: 6,
+        lineHeight: 22,
     },
     formContainer: {
         padding: 20,
-        marginTop: -20,
+        marginTop: -40,
     },
     formCard: {
         padding: 24,
+        borderRadius: 28,
         ...Shadows.medium,
+    },
+    section: {
+        marginBottom: 32,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        backgroundColor: Colors.surfaceSecondary,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 10,
+        alignSelf: 'flex-start',
+    },
+    sectionTitle: {
+        fontSize: 13,
+        fontWeight: '800',
+        color: Colors.primary,
+        marginLeft: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
     hint: {
         fontSize: 12,
         color: Colors.textMuted,
-        marginBottom: 24,
+        marginBottom: 8,
         marginTop: -10,
         marginLeft: 4,
+    },
+    publishBtn: {
+        marginTop: 10,
+        borderRadius: 16,
     },
 });

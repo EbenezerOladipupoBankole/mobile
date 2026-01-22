@@ -6,15 +6,47 @@ import { Colors, Shadows } from '../../constants/Colors';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { Card } from '../../components/Card';
+import { Logo } from '../../components/Logo';
 
 export default function HomeScreen() {
   const router = useRouter();
 
   const categories = [
-    { id: '1', name: 'Tech', icon: 'laptop' },
-    { id: '2', name: 'Retail', icon: 'shopping-cart' },
-    { id: '3', name: 'Edu', icon: 'book' },
-    { id: '4', name: 'Health', icon: 'plus-square' },
+    { id: '1', name: 'Software', icon: 'code', color: '#E0E7FF', iconColor: '#4338CA' },
+    { id: '2', name: 'Design', icon: 'paint-brush', color: '#FDF2F7', iconColor: '#BE185D' },
+    { id: '3', name: 'Marketing', icon: 'line-chart', color: '#ECFDF5', iconColor: '#047857' },
+    { id: '4', name: 'Admin', icon: 'building', color: '#FFF7ED', iconColor: '#C2410C' },
+    { id: '5', name: 'Health', icon: 'heartbeat', color: '#FEF2F2', iconColor: '#B91C1C' },
+  ];
+
+  const featuredCompanies = [
+    { id: '1', name: 'Olusola & Associates', jobs: 12, initials: 'OA' },
+    { id: '2', name: 'Rock City Tech', jobs: 5, initials: 'RC' },
+    { id: '3', name: 'Gateway Retail', jobs: 8, initials: 'GR' },
+    { id: '4', name: 'Abeokuta Health', jobs: 3, initials: 'AH' },
+  ];
+
+  const recentJobs = [
+    {
+      id: '1',
+      title: 'Administrative Manager',
+      company: 'Olusola & Associates',
+      location: 'Abeokuta, Nigeria',
+      type: 'Full-time',
+      salary: '₦120k - 150k',
+      time: '2h ago',
+      initials: 'OA'
+    },
+    {
+      id: '2',
+      title: 'Junior Web Developer',
+      company: 'Rock City Tech',
+      location: 'On-site',
+      type: 'Contract',
+      salary: '₦80k - 100k',
+      time: '5h ago',
+      initials: 'RC'
+    }
   ];
 
   return (
@@ -25,10 +57,7 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <View style={styles.headerBrand}>
-              <Image
-                source={require('../../assets/images/logo.png')}
-                style={styles.headerLogo}
-              />
+              <Logo size={50} iconOnly style={styles.headerLogo} />
               <View>
                 <Text style={styles.greeting}>Welcome to</Text>
                 <Text style={styles.brandName}>ViteHire</Text>
@@ -87,18 +116,38 @@ export default function HomeScreen() {
           {/* Categories */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Industries</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll} contentContainerStyle={{ paddingRight: 40 }}>
               {categories.map((cat) => (
                 <TouchableOpacity
                   key={cat.id}
-                  style={styles.categoryChip}
+                  style={[styles.categoryCard, { backgroundColor: cat.color }]}
                   onPress={() => router.push({
                     pathname: '/jobs',
                     params: { category: cat.name }
                   })}
                 >
-                  <FontAwesome name={cat.icon as any} size={14} color={Colors.accent} style={{ marginRight: 6 }} />
+                  <View style={[styles.categoryIcon, { backgroundColor: 'white' }]}>
+                    <FontAwesome name={cat.icon as any} size={18} color={cat.iconColor} />
+                  </View>
                   <Text style={styles.categoryText}>{cat.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Featured Companies */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Featured Companies</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.companyScroll} contentContainerStyle={{ paddingRight: 40 }}>
+              {featuredCompanies.map((company) => (
+                <TouchableOpacity key={company.id} style={styles.companyCard}>
+                  <View style={styles.companyLogo}>
+                    <Text style={styles.companyInitials}>{company.initials}</Text>
+                  </View>
+                  <Text style={styles.companyNameText} numberOfLines={1}>{company.name}</Text>
+                  <Text style={styles.companyJobs}>{company.jobs} positions</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -113,33 +162,36 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
 
-            <Card style={styles.featuredJobCard}>
-              <View style={styles.jobInfoRow}>
-                <View style={styles.jobLogoStub}>
-                  <Text style={styles.logoText}>OA</Text>
-                </View>
-                <View style={styles.jobDetailsHeader}>
-                  <Text style={styles.jobTitle}>Administrative Manager</Text>
-                  <Text style={styles.companyName}>Olusola & Associates</Text>
-                </View>
-              </View>
-              <View style={styles.jobTags}>
-                <View style={styles.tag}>
-                  <Text style={styles.tagText}>Full-time</Text>
-                </View>
-                <View style={styles.tag}>
-                  <Text style={styles.tagText}>On-site</Text>
-                </View>
-                <Text style={styles.jobSalary}>₦120k - 150k</Text>
-              </View>
-              <Button
-                title="View Details"
-                onPress={() => router.push('/jobs')}
-                variant="primary"
-                size="small"
-                style={{ marginTop: 16 }}
-              />
-            </Card>
+            {recentJobs.map((job) => (
+              <TouchableOpacity key={job.id} onPress={() => router.push('/jobs')}>
+                <Card style={styles.premiumJobCard}>
+                  <View style={styles.jobTopRow}>
+                    <View style={styles.jobLogoCircle}>
+                      <Text style={styles.jobLogoText}>{job.initials}</Text>
+                    </View>
+                    <View style={styles.jobMeta}>
+                      <Text style={styles.premiumJobTitle}>{job.title}</Text>
+                      <Text style={styles.premiumCompanyName}>{job.company}</Text>
+                    </View>
+                    <TouchableOpacity style={styles.saveBtn}>
+                      <FontAwesome name="heart-o" size={18} color={Colors.textMuted} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.jobTagContainer}>
+                    <View style={styles.premiumTag}>
+                      <FontAwesome name="briefcase" size={10} color={Colors.textSecondary} style={{ marginRight: 4 }} />
+                      <Text style={styles.premiumTagText}>{job.type}</Text>
+                    </View>
+                    <View style={styles.premiumTag}>
+                      <FontAwesome name="map-marker" size={10} color={Colors.textSecondary} style={{ marginRight: 4 }} />
+                      <Text style={styles.premiumTagText}>{job.location.split(',')[0]}</Text>
+                    </View>
+                    <Text style={styles.premiumSalary}>{job.salary}</Text>
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
       </ScrollView>
@@ -263,78 +315,139 @@ const styles = StyleSheet.create({
   categoryScroll: {
     marginHorizontal: -24,
     paddingHorizontal: 24,
+    marginTop: 8,
   },
-  categoryChip: {
-    flexDirection: 'row',
+  categoryCard: {
+    width: 100,
+    height: 120,
+    borderRadius: 24,
+    padding: 12,
+    marginRight: 16,
+    justifyContent: 'space-between',
+    ...Shadows.small,
+  },
+  categoryIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
     alignItems: 'center',
-    backgroundColor: Colors.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    marginRight: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    justifyContent: 'center',
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '800',
     color: Colors.text,
   },
-  featuredJobCard: {
-    padding: 20,
+  companyScroll: {
+    marginHorizontal: -24,
+    paddingHorizontal: 24,
+    marginTop: 8,
   },
-  jobInfoRow: {
-    flexDirection: 'row',
+  companyCard: {
+    backgroundColor: Colors.surface,
+    padding: 16,
+    borderRadius: 20,
+    marginRight: 16,
+    width: 150,
     alignItems: 'center',
-    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    ...Shadows.small,
   },
-  jobLogoStub: {
+  companyLogo: {
     width: 50,
     height: 50,
     borderRadius: 14,
     backgroundColor: Colors.surfaceSecondary,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 12,
+  },
+  companyInitials: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: Colors.accent,
+  },
+  companyNameText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.text,
+    textAlign: 'center',
+  },
+  companyJobs: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  premiumJobCard: {
+    padding: 20,
+    borderRadius: 24,
+    marginBottom: 16,
+  },
+  jobTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  jobLogoCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: Colors.surfaceSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: 16,
   },
-  logoText: {
+  jobLogoText: {
+    fontSize: 16,
     fontWeight: '800',
     color: Colors.textSecondary,
   },
-  jobDetailsHeader: {
+  jobMeta: {
     flex: 1,
   },
-  jobTitle: {
+  premiumJobTitle: {
     fontSize: 16,
     fontWeight: '800',
     color: Colors.text,
-    marginBottom: 4,
+    marginBottom: 2,
   },
-  companyName: {
+  premiumCompanyName: {
     fontSize: 14,
     color: Colors.textSecondary,
     fontWeight: '500',
   },
-  jobTags: {
+  saveBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: Colors.surfaceSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  jobTagContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  tag: {
+  premiumTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: Colors.surfaceSecondary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginRight: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    marginRight: 10,
   },
-  tagText: {
-    fontSize: 11,
+  premiumTagText: {
+    fontSize: 12,
     fontWeight: '600',
     color: Colors.textSecondary,
   },
-  jobSalary: {
+  premiumSalary: {
     marginLeft: 'auto',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.success,
   },
 });

@@ -1,23 +1,70 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, StatusBar, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors } from '../constants/Colors';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { FontAwesome } from '@expo/vector-icons';
+import { Logo } from '../components/Logo';
+import { auth } from '../utils/firebase';
+import {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    updateProfile
+} from '@firebase/auth';
+
 
 export default function AuthScreen() {
     const router = useRouter();
     const [isLogin, setIsLogin] = useState(true);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [fullName, setFullName] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleAuth = () => {
+    const handleAuth = async () => {
+        if (!email || !password || (!isLogin && !fullName)) {
+            Alert.alert('Error', 'Please fill in all fields');
+            return;
+        }
+
         setLoading(true);
-        // Simulate auth
-        setTimeout(() => {
+        try {
+            if (isLogin) {
+                // Sign In
+                await signInWithEmailAndPassword(auth, email.trim(), password);
+                router.replace('/role-selection');
+            } else {
+                // Sign Up
+                const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+                // Update profile with full name
+                await updateProfile(userCredential.user, {
+                    displayName: fullName.trim()
+                });
+                router.replace('/role-selection');
+            }
+        } catch (error: any) {
+            console.error(error);
+            let errorMessage = 'An error occurred during authentication.';
+
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = 'This email is already in use. Try signing in instead.';
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = 'Invalid email address format.';
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = 'Password should be at least 6 characters.';
+            } else if (error.code === 'auth/invalid-credential') {
+                errorMessage = isLogin
+                    ? 'Invalid email or password. Please check your details and try again.'
+                    : 'The provided credentials are not valid. Please ensure you are using a valid email.';
+            } else if (error.code === 'auth/operation-not-allowed') {
+                errorMessage = 'Email/Password accounts are not enabled in the Firebase Console. Please check your project settings.';
+            }
+
+            Alert.alert('Authentication Failed', errorMessage);
+        } finally {
             setLoading(false);
-            router.replace('/role-selection');
-        }, 1500);
+        }
     };
 
     return (
@@ -28,9 +75,7 @@ export default function AuthScreen() {
             <StatusBar barStyle="dark-content" />
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
-                    <View style={styles.logoCircle}>
-                        <FontAwesome name="flash" size={32} color={Colors.white} />
-                    </View>
+                    <Logo size={64} iconOnly style={styles.logo} />
                     <Text style={styles.title}>{isLogin ? 'Welcome Back' : 'Create Account'}</Text>
                     <Text style={styles.subtitle}>
                         {isLogin ? 'Sign in to continue your career journey' : 'Join Abeokuta\'s premier job marketplace'}
@@ -41,16 +86,23 @@ export default function AuthScreen() {
                     {!isLogin && (
                         <Input
                             placeholder="Full Name"
+                            value={fullName}
+                            onChangeText={setFullName}
                             leftIcon={<FontAwesome name="user-o" size={16} color={Colors.textMuted} />}
                         />
                     )}
                     <Input
                         placeholder="Email Address"
+                        value={email}
+                        onChangeText={setEmail}
                         keyboardType="email-address"
+                        autoCapitalize="none"
                         leftIcon={<FontAwesome name="envelope-o" size={16} color={Colors.textMuted} />}
                     />
                     <Input
                         placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
                         secureTextEntry
                         leftIcon={<FontAwesome name="lock" size={16} color={Colors.textMuted} />}
                     />
@@ -68,18 +120,6 @@ export default function AuthScreen() {
                         size="large"
                         style={styles.authBtn}
                     />
-
-                    <View style={styles.socialContainer}>
-                        <Text style={styles.socialTitle}>Or continue with</Text>
-                        <View style={styles.socialButtons}>
-                            <TouchableOpacity style={styles.socialBtn}>
-                                <FontAwesome name="google" size={20} color={Colors.text} />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.socialBtn}>
-                                <FontAwesome name="apple" size={20} color={Colors.text} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
                 </View>
 
                 <View style={styles.footer}>
@@ -109,14 +149,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 40,
     },
-    logoCircle: {
-        width: 64,
-        height: 64,
-        borderRadius: 20,
-        backgroundColor: Colors.accent,
-        alignItems: 'center',
-        justifyContent: 'center',
+    logo: {
         marginBottom: 20,
+        shadowColor: Colors.accent,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        elevation: 5,
     },
     title: {
         fontSize: 28,

@@ -15,16 +15,24 @@ const NOTIFICATIONS = [
     },
     {
         id: '2',
-        title: 'New Job Alert',
-        message: '3 new jobs found matching your "Tech" interest in Abeokuta.',
+        title: 'Interview Invite',
+        message: 'Rock City Tech wants to schedule an interview with you for "Web Developer".',
         time: '5h ago',
+        type: 'invite',
+        read: false
+    },
+    {
+        id: '3',
+        title: 'New Jobs Found',
+        message: '5 new positions matching your skills were posted in Abeokuta today.',
+        time: '8h ago',
         type: 'alert',
         read: true
     },
     {
-        id: '3',
-        title: 'Welcome to ViteHire',
-        message: 'Complete your profile to increase your chances of being hired by 40%.',
+        id: '4',
+        title: 'Profile Strenght',
+        message: 'Your profile is 80% complete. Add your latest project to stand out!',
         time: '1d ago',
         type: 'welcome',
         read: true
@@ -36,27 +44,28 @@ export default function NotificationsScreen() {
 
     const getIcon = (type: string) => {
         switch (type) {
-            case 'view': return { name: 'eye', color: Colors.accent };
-            case 'alert': return { name: 'briefcase', color: Colors.warning };
-            case 'welcome': return { name: 'star', color: Colors.success };
-            default: return { name: 'bell-o', color: Colors.textMuted };
+            case 'view': return { name: 'eye', color: '#6366F1' }; // Indigo
+            case 'invite': return { name: 'calendar-check-o', color: '#10B981' }; // Emerald
+            case 'alert': return { name: 'bell', color: '#F59E0B' }; // Amber
+            case 'welcome': return { name: 'star', color: '#EC4899' }; // Pink
+            default: return { name: 'circle', color: Colors.textMuted };
         }
     };
 
     const renderItem = ({ item }: { item: typeof NOTIFICATIONS[0] }) => {
         const icon = getIcon(item.type);
         return (
-            <TouchableOpacity style={[styles.notificationItem, !item.read && styles.unreadItem]}>
-                <View style={[styles.iconContainer, { backgroundColor: icon.color + '15' }]}>
-                    <FontAwesome name={icon.name as any} size={18} color={icon.color} />
+            <TouchableOpacity style={[styles.notificationCard, !item.read && styles.unreadCard]}>
+                <View style={[styles.iconCircle, { backgroundColor: icon.color + '15' }]}>
+                    <FontAwesome name={icon.name as any} size={20} color={icon.color} />
                 </View>
-                <View style={styles.textContainer}>
-                    <View style={styles.notifHeader}>
-                        <Text style={styles.notifTitle}>{item.title}</Text>
-                        {!item.read && <View style={styles.unreadDot} />}
+                <View style={styles.contentArea}>
+                    <View style={styles.notifTop}>
+                        <Text style={[styles.titleText, !item.read && styles.unreadTitle]}>{item.title}</Text>
+                        <Text style={styles.timeText}>{item.time}</Text>
                     </View>
-                    <Text style={styles.notifMessage}>{item.message}</Text>
-                    <Text style={styles.notifTime}>{item.time}</Text>
+                    <Text style={styles.messageText} numberOfLines={2}>{item.message}</Text>
+                    {!item.read && <View style={styles.pulseDot} />}
                 </View>
             </TouchableOpacity>
         );
@@ -127,56 +136,72 @@ const styles = StyleSheet.create({
         color: Colors.accent,
     },
     listContainer: {
-        paddingVertical: 10,
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 40,
     },
-    notificationItem: {
+    notificationCard: {
         flexDirection: 'row',
-        padding: 20,
+        alignItems: 'center',
+        padding: 16,
         backgroundColor: Colors.surface,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.border,
+        borderRadius: 24,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        ...Shadows.small,
     },
-    unreadItem: {
+    unreadCard: {
         backgroundColor: '#F8FAFC',
+        borderColor: Colors.accent + '20',
     },
-    iconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
+    iconCircle: {
+        width: 48,
+        height: 48,
+        borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 16,
     },
-    textContainer: {
+    contentArea: {
         flex: 1,
+        position: 'relative',
     },
-    notifHeader: {
+    notifTop: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 4,
     },
-    notifTitle: {
+    titleText: {
         fontSize: 15,
-        fontWeight: '800',
-        color: Colors.text,
+        fontWeight: '700',
+        color: Colors.textSecondary,
     },
-    unreadDot: {
+    unreadTitle: {
+        color: Colors.text,
+        fontWeight: '800',
+    },
+    timeText: {
+        fontSize: 12,
+        color: Colors.textMuted,
+        fontWeight: '500',
+    },
+    messageText: {
+        fontSize: 14,
+        color: Colors.textSecondary,
+        lineHeight: 20,
+    },
+    pulseDot: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
         width: 8,
         height: 8,
         borderRadius: 4,
         backgroundColor: Colors.accent,
-    },
-    notifMessage: {
-        fontSize: 14,
-        color: Colors.textSecondary,
-        lineHeight: 20,
-        marginBottom: 8,
-    },
-    notifTime: {
-        fontSize: 12,
-        color: Colors.textMuted,
-        fontWeight: '500',
+        borderWidth: 2,
+        borderColor: Colors.surface,
     },
     emptyState: {
         alignItems: 'center',
@@ -186,15 +211,16 @@ const styles = StyleSheet.create({
     },
     emptyTitle: {
         fontSize: 20,
-        fontWeight: '800',
+        fontWeight: '900',
         color: Colors.text,
         marginTop: 20,
+        letterSpacing: -0.5,
     },
     emptySubtitle: {
-        fontSize: 14,
+        fontSize: 15,
         color: Colors.textSecondary,
         textAlign: 'center',
-        marginTop: 8,
-        lineHeight: 20,
+        marginTop: 10,
+        lineHeight: 22,
     },
 });
