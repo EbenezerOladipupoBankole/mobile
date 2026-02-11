@@ -9,13 +9,28 @@ import { auth } from '../../utils/firebase';
 import { signOut } from 'firebase/auth';
 import { Alert } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function ProfileScreen() {
     const router = useRouter();
     const user = auth.currentUser;
+    const [role, setRole] = React.useState<string | null>(null);
+    const [loading, setLoading] = React.useState(true);
+
     const skills = ['Project Management', 'Team Leadership', 'Office Administration', 'Customer Relations'];
+
+    React.useEffect(() => {
+        const getRole = async () => {
+            const savedRole = await AsyncStorage.getItem('userRole');
+            setRole(savedRole);
+            setLoading(false);
+        };
+        getRole();
+    }, []);
 
     const handleSignOut = async () => {
         try {
+            await AsyncStorage.setItem('userRole', ''); // Clear role
             await signOut(auth);
             router.replace('/auth');
         } catch (error) {
@@ -51,9 +66,21 @@ export default function ProfileScreen() {
                 <Text style={styles.email}>{user?.email || 'Abeokuta, Nigeria'}</Text>
 
                 <View style={styles.badgeRow}>
-                    <View style={styles.verifiedBadge}>
-                        <FontAwesome name="check-circle" size={12} color={Colors.success} />
-                        <Text style={styles.verifiedText}>Verified Talent</Text>
+                    <View style={[
+                        styles.verifiedBadge,
+                        { backgroundColor: role === 'employer' ? '#EEF2FF' : '#ECFDF5' }
+                    ]}>
+                        <FontAwesome
+                            name={role === 'employer' ? "briefcase" : "check-circle"}
+                            size={12}
+                            color={role === 'employer' ? Colors.accent : Colors.success}
+                        />
+                        <Text style={[
+                            styles.verifiedText,
+                            { color: role === 'employer' ? Colors.accent : Colors.success }
+                        ]}>
+                            {role === 'employer' ? 'Verified Employer' : 'Verified Talent'}
+                        </Text>
                     </View>
                 </View>
             </View>

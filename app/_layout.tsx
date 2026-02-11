@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,20 +50,22 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="splash" />
-        <Stack.Screen name="onboarding" />
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="role-selection" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="modal" options={{ title: 'Modal' }} />
-        <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
-        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
-        <Stack.Screen name="join-talent" options={{ title: 'Join Talent' }} />
-        <Stack.Screen name="post-job" options={{ title: 'Post Job' }} />
-        <Stack.Screen name="job/[id]" options={{ title: 'Job Details' }} />
-      </Stack>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="splash" />
+          <Stack.Screen name="onboarding" />
+          <Stack.Screen name="auth" />
+          <Stack.Screen name="role-selection" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="modal" options={{ title: 'Modal' }} />
+          <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
+          <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+          <Stack.Screen name="join-talent" options={{ title: 'Join Talent' }} />
+          <Stack.Screen name="post-job" options={{ title: 'Post Job' }} />
+          <Stack.Screen name="job/[id]" options={{ title: 'Job Details' }} />
+        </Stack>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

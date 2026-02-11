@@ -5,7 +5,8 @@ import { Colors, Shadows } from '../constants/Colors';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
-import { API_URL } from '../constants/Config';
+import { db } from '../utils/firebase';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRouter } from 'expo-router';
 
 export default function PostJobScreen() {
@@ -30,24 +31,17 @@ export default function PostJobScreen() {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_URL}/jobs`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(form),
+            await addDoc(collection(db, 'jobs'), {
+                ...form,
+                status: 'approved', // Auto-approve for now
+                createdAt: Timestamp.now()
             });
 
-            if (response.ok) {
-                Alert.alert('Success!', 'Your job posting is now pending review.');
-                router.back();
-            } else {
-                const errorData = await response.json();
-                Alert.alert('Submission Error', errorData.message || 'Could not post job.');
-            }
+            Alert.alert('Success!', 'Your job posting is now live!');
+            router.back();
         } catch (error) {
             console.error('Post job error:', error);
-            Alert.alert('Connection Error', 'Please check your internet.');
+            Alert.alert('Submission Error', 'Could not post job to the database.');
         } finally {
             setLoading(false);
         }

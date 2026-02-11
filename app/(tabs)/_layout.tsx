@@ -53,6 +53,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="match"
+        options={{
+          title: 'Match',
+          tabBarIcon: ({ color }) => <TabBarIcon name="bolt" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="talents"
+        options={{
+          title: 'Talents',
+          tabBarIcon: ({ color }) => <TabBarIcon name="users" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="saved"
         options={{
           title: 'Saved',

@@ -3,23 +3,29 @@ import { StyleSheet, FlatList, View, Text, ActivityIndicator, TouchableOpacity, 
 import { FontAwesome } from '@expo/vector-icons';
 import { Colors, Shadows } from '../../constants/Colors';
 import { useRouter } from 'expo-router';
+import { jobService } from '../../utils/jobService';
 
 export default function JobsScreen() {
     const router = useRouter();
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const fetchJobs = async () => {
+        const data = await jobService.getJobs();
+        setJobs(data);
+        setLoading(false);
+        setRefreshing(false);
+    };
 
     useEffect(() => {
-        // Simple mock data load
-        const mockData = [
-            { _id: '1', title: 'Senior Sales Executive', companyName: 'Olumo Supermarket', category: 'Retail' },
-            { _id: '2', title: 'React Native Developer', companyName: 'Abeokuta TechHub', category: 'Tech' },
-        ];
-        setTimeout(() => {
-            setJobs(mockData);
-            setLoading(false);
-        }, 500);
+        fetchJobs();
     }, []);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchJobs();
+    };
 
     const renderJobItem = ({ item }: { item: any }) => (
         <TouchableOpacity
@@ -45,9 +51,12 @@ export default function JobsScreen() {
             ) : (
                 <FlatList
                     data={jobs}
-                    keyExtractor={(item) => item._id}
+                    keyExtractor={(item) => item.id}
                     renderItem={renderJobItem}
                     contentContainerStyle={styles.listContainer}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />
+                    }
                 />
             )}
         </View>

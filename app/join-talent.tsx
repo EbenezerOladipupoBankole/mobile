@@ -6,7 +6,9 @@ import { Colors, Shadows } from '../constants/Colors';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
-import { API_URL } from '../constants/Config';
+import { db, storage } from '../utils/firebase';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'expo-router';
 
 export default function JoinTalentScreen() {
@@ -46,40 +48,27 @@ export default function JoinTalentScreen() {
         setLoading(true);
 
         try {
-            const formData = new FormData();
-            formData.append('fullName', form.fullName);
-            formData.append('phoneNumber', form.phoneNumber);
-            formData.append('email', form.email);
-            formData.append('category', form.category);
-            formData.append('skillsSummary', form.skillsSummary);
+            // 1. Upload CV to Firebase Storage
+            let cvUrl = '';
+            const response = await fetch(cv.uri);
+            const blob = await response.blob();
 
-            // @ts-ignore
-            formData.append('cv', {
-                uri: cv.uri,
-                name: cv.name,
-                type: 'application/pdf',
+            const storageRef = ref(storage, `cvs/${Date.now()}_${cv.name}`);
+            await uploadBytes(storageRef, blob);
+            cvUrl = await getDownloadURL(storageRef);
+
+            // 2. Save to Firestore
+            await addDoc(collection(db, 'talents'), {
+                ...form,
+                cvPath: cvUrl,
+                createdAt: Timestamp.now()
             });
 
-            const response = await fetch(`${API_URL}/talents`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json',
-                    // Note: 'Content-Type': 'multipart/form-data' is usually handled automatically by fetch with FormData
-                },
-            });
-
-            if (response.ok) {
-                Alert.alert('Congratulations!', 'Your profile has been added to the talent pool. Companies will reach out to you soon.');
-                router.back();
-            } else {
-                const errorData = await response.json();
-                Alert.alert('Submission Error', errorData.message || 'We could not process your application.');
-            }
+            Alert.alert('Congratulations!', 'Your profile has been added to the talent pool.');
+            router.back();
         } catch (error) {
             console.error('Join talent error:', error);
-            // Fallback for success in mock/local dev if backend is down but user wants to see result
-            Alert.alert('Network Issue', 'We had trouble connecting to our servers. Please try again.');
+            Alert.alert('Submission Error', 'We could not process your application at this time.');
         } finally {
             setLoading(false);
         }

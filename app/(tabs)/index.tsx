@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity, StatusBar, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, ScrollView, View, Text, TouchableOpacity, StatusBar, Image, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { Colors, Shadows } from '../../constants/Colors';
@@ -7,9 +7,27 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { Card } from '../../components/Card';
 import { Logo } from '../../components/Logo';
+import { jobService } from '../../utils/jobService';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [realJobs, setRealJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const data = await jobService.getJobs();
+        setRealJobs(data.slice(0, 3)); // Just show latest 3
+      } catch (err) {
+        console.error("Home fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
 
   const categories = [
     { id: '1', name: 'Software', icon: 'code', color: '#E0E7FF', iconColor: '#4338CA' },
@@ -24,29 +42,6 @@ export default function HomeScreen() {
     { id: '2', name: 'Rock City Tech', jobs: 5, initials: 'RC' },
     { id: '3', name: 'Gateway Retail', jobs: 8, initials: 'GR' },
     { id: '4', name: 'Abeokuta Health', jobs: 3, initials: 'AH' },
-  ];
-
-  const recentJobs = [
-    {
-      id: '1',
-      title: 'Administrative Manager',
-      company: 'Olusola & Associates',
-      location: 'Abeokuta, Nigeria',
-      type: 'Full-time',
-      salary: '₦120k - 150k',
-      time: '2h ago',
-      initials: 'OA'
-    },
-    {
-      id: '2',
-      title: 'Junior Web Developer',
-      company: 'Rock City Tech',
-      location: 'On-site',
-      type: 'Contract',
-      salary: '₦80k - 100k',
-      time: '5h ago',
-      initials: 'RC'
-    }
   ];
 
   return (
@@ -68,7 +63,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.heroText}>Find professional opportunities in Abeokuta. (Updated)</Text>
+          <Text style={styles.heroText}>Find professional opportunities in Abeokuta.</Text>
 
           <View style={styles.searchContainer}>
             <Input
@@ -82,6 +77,16 @@ export default function HomeScreen() {
         <View style={styles.content}>
           {/* Quick Stats/Badges */}
           <View style={styles.quickActions}>
+            <TouchableOpacity
+              style={styles.actionItem}
+              onPress={() => router.push('/match')}
+            >
+              <View style={[styles.actionIcon, { backgroundColor: '#F5F3FF' }]}>
+                <FontAwesome name="bolt" size={20} color="#7C3AED" />
+              </View>
+              <Text style={styles.actionLabel}>Match</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.actionItem}
               onPress={() => router.push('/post-job')}
@@ -153,45 +158,73 @@ export default function HomeScreen() {
             </ScrollView>
           </View>
 
-          {/* Featured Jobs */}
+          {/* Feature Highlight: Match Mode */}
+          <TouchableOpacity
+            style={styles.matchBanner}
+            onPress={() => router.push('/match')}
+          >
+            <LinearGradient
+              colors={['#7C3AED', '#3B82F6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.matchBannerGradient}
+            >
+              <View style={styles.matchBannerContent}>
+                <View>
+                  <Text style={styles.matchBannerTitle}>Tired of Searching?</Text>
+                  <Text style={styles.matchBannerSub}>Swipe right to apply instantly!</Text>
+                </View>
+                <View style={styles.matchBannerBadge}>
+                  <FontAwesome name="bolt" size={24} color="#7C3AED" />
+                </View>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* Recent Jobs */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Recently Posted</Text>
+              <Text style={styles.sectionTitle}>Latest Opportunities</Text>
               <TouchableOpacity onPress={() => router.push('/jobs')}>
                 <Text style={styles.seeAll}>View all</Text>
               </TouchableOpacity>
             </View>
 
-            {recentJobs.map((job) => (
-              <TouchableOpacity key={job.id} onPress={() => router.push('/jobs')}>
-                <Card style={styles.premiumJobCard}>
-                  <View style={styles.jobTopRow}>
-                    <View style={styles.jobLogoCircle}>
-                      <Text style={styles.jobLogoText}>{job.initials}</Text>
+            {loading ? (
+              <ActivityIndicator color={Colors.accent} style={{ marginVertical: 20 }} />
+            ) : realJobs.length > 0 ? (
+              realJobs.map((job) => (
+                <TouchableOpacity key={job.id} onPress={() => router.push(`/job/${job.id}`)}>
+                  <Card style={styles.premiumJobCard}>
+                    <View style={styles.jobTopRow}>
+                      <View style={styles.jobLogoCircle}>
+                        <Text style={styles.jobLogoText}>{job.companyName?.substring(0, 2).toUpperCase()}</Text>
+                      </View>
+                      <View style={styles.jobMeta}>
+                        <Text style={styles.premiumJobTitle}>{job.title}</Text>
+                        <Text style={styles.premiumCompanyName}>{job.companyName}</Text>
+                      </View>
+                      <TouchableOpacity style={styles.saveBtn}>
+                        <FontAwesome name="heart-o" size={18} color={Colors.textMuted} />
+                      </TouchableOpacity>
                     </View>
-                    <View style={styles.jobMeta}>
-                      <Text style={styles.premiumJobTitle}>{job.title}</Text>
-                      <Text style={styles.premiumCompanyName}>{job.company}</Text>
-                    </View>
-                    <TouchableOpacity style={styles.saveBtn}>
-                      <FontAwesome name="heart-o" size={18} color={Colors.textMuted} />
-                    </TouchableOpacity>
-                  </View>
 
-                  <View style={styles.jobTagContainer}>
-                    <View style={styles.premiumTag}>
-                      <FontAwesome name="briefcase" size={10} color={Colors.textSecondary} style={{ marginRight: 4 }} />
-                      <Text style={styles.premiumTagText}>{job.type}</Text>
+                    <View style={styles.jobTagContainer}>
+                      <View style={styles.premiumTag}>
+                        <FontAwesome name="briefcase" size={10} color={Colors.textSecondary} style={{ marginRight: 4 }} />
+                        <Text style={styles.premiumTagText}>{job.jobType}</Text>
+                      </View>
+                      <View style={styles.premiumTag}>
+                        <FontAwesome name="map-marker" size={10} color={Colors.textSecondary} style={{ marginRight: 4 }} />
+                        <Text style={styles.premiumTagText}>Abeokuta</Text>
+                      </View>
                     </View>
-                    <View style={styles.premiumTag}>
-                      <FontAwesome name="map-marker" size={10} color={Colors.textSecondary} style={{ marginRight: 4 }} />
-                      <Text style={styles.premiumTagText}>{job.location.split(',')[0]}</Text>
-                    </View>
-                    <Text style={styles.premiumSalary}>{job.salary}</Text>
-                  </View>
-                </Card>
-              </TouchableOpacity>
-            ))}
+                  </Card>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text style={{ textAlign: 'center', color: Colors.textSecondary, marginVertical: 20 }}>No jobs found</Text>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -276,7 +309,7 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     alignItems: 'center',
-    width: '30%',
+    width: '22%',
   },
   actionIcon: {
     width: 60,
@@ -444,10 +477,37 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.textSecondary,
   },
-  premiumSalary: {
-    marginLeft: 'auto',
-    fontSize: 14,
-    fontWeight: '800',
-    color: Colors.success,
+  matchBanner: {
+    marginBottom: 32,
+    borderRadius: 24,
+    overflow: 'hidden',
+    ...Shadows.medium,
   },
+  matchBannerGradient: {
+    padding: 24,
+  },
+  matchBannerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  matchBannerTitle: {
+    color: Colors.white,
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  matchBannerSub: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  matchBannerBadge: {
+    backgroundColor: Colors.white,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });

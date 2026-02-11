@@ -4,13 +4,18 @@ import { useRouter } from 'expo-router';
 import { Colors, Shadows } from '../constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
 import { Logo } from '../components/Logo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function RoleSelectionScreen() {
     const router = useRouter();
 
-    const selectRole = (role: 'seeker' | 'employer') => {
-        // Here you would typically save this to global state or storage
-        router.replace('/(tabs)');
+    const selectRole = async (role: 'seeker' | 'employer') => {
+        try {
+            await AsyncStorage.setItem('userRole', role);
+            router.replace('/(tabs)');
+        } catch (e) {
+            router.replace('/(tabs)');
+        }
     };
 
     return (
